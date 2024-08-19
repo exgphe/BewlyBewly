@@ -3,17 +3,13 @@ import QRCodeVue from 'qrcode.vue'
 import { useToast } from 'vue-toastification'
 import draggable from 'vuedraggable'
 
-import Button from '~/components/Button.vue'
-import Dialog from '~/components/Dialog.vue'
-import Input from '~/components/Input.vue'
-import Radio from '~/components/Radio.vue'
 import { accessKey, settings } from '~/logic'
 import { useMainStore } from '~/stores/mainStore'
 import { getTVLoginQRCode, pollTVLoginQRCode, revokeAccessKey } from '~/utils/authProvider'
 
-import SearchPage from './SearchPage.vue'
-import SettingsItem from './SettingsItem.vue'
-import SettingsItemGroup from './SettingsItemGroup.vue'
+import SettingsItem from '../components/SettingsItem.vue'
+import SettingsItemGroup from '../components/SettingsItemGroup.vue'
+import SearchPage from '../SearchPage/SearchPage.vue'
 
 const mainStore = useMainStore()
 const toast = useToast()
@@ -243,7 +239,7 @@ function handleToggleHomeTab(tab: any) {
     <SettingsItemGroup
       :title="$t('settings.group_home_tabs')"
     >
-      <SettingsItem next-line :desc="$t('settings.home_tabs_adjustment_desc')">
+      <SettingsItem :desc="$t('settings.home_tabs_adjustment_desc')">
         <template #title>
           <div flex="~ gap-4 items-center">
             {{ $t('settings.home_tabs_adjustment') }}
@@ -255,25 +251,28 @@ function handleToggleHomeTab(tab: any) {
             </Button>
           </div>
         </template>
-        <draggable
-          v-model="settings.homePageTabVisibilityList"
-          item-key="page"
-          :component-data="{ style: 'display: flex; gap: 0.5rem; flex-wrap: wrap;' }"
-        >
-          <template #item="{ element }">
-            <div
-              flex="~ gap-2 items-center" p="x-4 y-2" bg="$bew-fill-1" rounded="$bew-radius" cursor-all-scroll
-              duration-300
-              :style="{
-                background: element.visible ? 'var(--bew-theme-color)' : 'var(--bew-fill-1)',
-                color: element.visible ? 'white' : 'var(--bew-text-1)',
-              }"
-              @click="handleToggleHomeTab(element)"
-            >
-              {{ $t(mainStore.homeTabs.find(tab => tab.page === element.page)?.i18nKey ?? '') }}
-            </div>
-          </template>
-        </draggable>
+
+        <template #bottom>
+          <draggable
+            v-model="settings.homePageTabVisibilityList"
+            item-key="page"
+            :component-data="{ style: 'display: flex; gap: 0.5rem; flex-wrap: wrap;' }"
+          >
+            <template #item="{ element }">
+              <div
+                flex="~ gap-2 items-center" p="x-4 y-2" bg="$bew-fill-1" rounded="$bew-radius" cursor-all-scroll
+                duration-300
+                :style="{
+                  background: element.visible ? 'var(--bew-theme-color)' : 'var(--bew-fill-1)',
+                  color: element.visible ? 'white' : 'var(--bew-text-1)',
+                }"
+                @click="handleToggleHomeTab(element)"
+              >
+                {{ $t(mainStore.homeTabs.find(tab => tab.page === element.page)?.i18nKey ?? '') }}
+              </div>
+            </template>
+          </draggable>
+        </template>
       </SettingsItem>
       <SettingsItem :title="$t('settings.always_show_tabs_on_home_page')">
         <Radio v-model="settings.alwaysShowTabsOnHomePage" />

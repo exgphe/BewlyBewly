@@ -3,7 +3,6 @@ import { useI18n } from 'vue-i18n'
 
 import { settings } from '~/logic'
 
-import OverlayScrollbarsComponent from '../OverlayScrollbarsComponent'
 import type { MenuItem } from './types'
 import { MenuType } from './types'
 
@@ -12,13 +11,14 @@ const emit = defineEmits(['close'])
 const { t } = useI18n()
 
 const settingsMenu = {
-  [MenuType.General]: defineAsyncComponent(() => import('./components/General.vue')),
-  [MenuType.Appearance]: defineAsyncComponent(() => import('./components/Appearance.vue')),
-  [MenuType.SearchPage]: defineAsyncComponent(() => import('./components/SearchPage.vue')),
-  [MenuType.Home]: defineAsyncComponent(() => import('./components/Home.vue')),
-  [MenuType.Compatibility]: defineAsyncComponent(() => import('./components/Compatibility.vue')),
-  // [MenuType.BilibiliSettings]: defineAsyncComponent(() => import('./components/BilibiliSettings.vue')),
-  [MenuType.About]: defineAsyncComponent(() => import('./components/About.vue')),
+  [MenuType.General]: defineAsyncComponent(() => import('./General/General.vue')),
+  [MenuType.DesktopAndDock]: defineAsyncComponent(() => import('./DesktopAndDock/DesktopAndDock.vue')),
+  [MenuType.Appearance]: defineAsyncComponent(() => import('./Appearance/Appearance.vue')),
+  [MenuType.SearchPage]: defineAsyncComponent(() => import('./SearchPage/SearchPage.vue')),
+  [MenuType.Home]: defineAsyncComponent(() => import('./Home/Home.vue')),
+  [MenuType.Compatibility]: defineAsyncComponent(() => import('./Compatibility/Compatibility.vue')),
+  // [MenuType.BilibiliSettings]: defineAsyncComponent(() => import('./BilibiliSettings/BilibiliSettings.vue')),
+  [MenuType.About]: defineAsyncComponent(() => import('./About/About.vue')),
 }
 const activatedMenuItem = ref<MenuType>(MenuType.General)
 const title = ref<string>(t('settings.title'))
@@ -39,6 +39,12 @@ const settingsMenuItems = computed((): MenuItem[] => {
       icon: 'i-mingcute:settings-3-line',
       iconActivated: 'i-mingcute:settings-3-fill',
       title: t('settings.menu_general'),
+    },
+    {
+      value: MenuType.DesktopAndDock,
+      icon: 'i-mingcute:imac-line',
+      iconActivated: 'i-mingcute:imac-fill',
+      title: t('settings.menu_desktop_and_dock'),
     },
     {
       value: MenuType.Appearance,
@@ -135,7 +141,7 @@ function setCurrentTitle() {
         >
           <li v-for="menuItem in settingsMenuItems" :key="menuItem.value">
             <a
-              cursor-pointer w="40px group-hover:150px" h-40px
+              cursor-pointer w="40px group-hover:180px" h-40px
               rounded-30px flex items-center overflow-x-hidden
               duration-300 bg="hover:$bew-fill-2"
               :class="{ 'menu-item-activated': menuItem.value === activatedMenuItem }"

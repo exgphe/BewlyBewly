@@ -4,19 +4,12 @@ import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import browser from 'webextension-polyfill'
 
-import AppBackground from '~/components/AppBackground.vue'
-import BackToTopOrRefreshButton from '~/components/BackToTopOrRefreshButton.vue'
-import Dock from '~/components/Dock/Dock.vue'
-import OverlayScrollbarsComponent from '~/components/OverlayScrollbarsComponent'
-import RightSideButtons from '~/components/RightSideButtons/RightSideButtons.vue'
-import Settings from '~/components/Settings/Settings.vue'
-import TopBar from '~/components/TopBar/TopBar.vue'
 import type { BewlyAppProvider } from '~/composables/useAppProvider'
 import { useDark } from '~/composables/useDark'
 import { OVERLAY_SCROLL_BAR_SCROLL } from '~/constants/globalEvents'
 import { AppPage, LanguageType } from '~/enums/appEnums'
 import { accessKey, settings } from '~/logic'
-import { getUserID, hexToRGBA, isHomePage, scrollToTop } from '~/utils/main'
+import { getUserID, isHomePage, scrollToTop } from '~/utils/main'
 import emitter from '~/utils/mitt'
 
 const { isDark } = useDark()
@@ -80,6 +73,11 @@ watch(() => settings.value.disableFrostedGlass, () => {
 watch(() => settings.value.reduceFrostedGlassBlur, () => {
   handleReduceFrostedGlassBlur()
 })
+
+watch(() => settings.value.useOriginalBilibiliTopBar, () => {
+  settings.value.showTopBar = !settings.value.useOriginalBilibiliTopBar
+  document.documentElement.classList.toggle('remove-bili-top-bar', !settings.value.useOriginalBilibiliTopBar)
+}, { immediate: true })
 
 onBeforeMount(() => {
   handleBlockAds()
@@ -155,13 +153,9 @@ function setAppThemeColor() {
   const bewlyElement = document.querySelector('#bewly') as HTMLElement
   if (bewlyElement) {
     bewlyElement.style.setProperty('--bew-theme-color', settings.value.themeColor)
-    for (let i = 0; i < 9; i++)
-      bewlyElement.style.setProperty(`--bew-theme-color-${i + 1}0`, hexToRGBA(settings.value.themeColor, i * 0.1 + 0.1))
   }
 
   document.documentElement.style.setProperty('--bew-theme-color', settings.value.themeColor)
-  for (let i = 0; i < 9; i++)
-    document.documentElement.style.setProperty(`--bew-theme-color-${i + 1}0`, hexToRGBA(settings.value.themeColor, i * 0.1 + 0.1))
 }
 
 function handleBackToTop(targetScrollTop = 0 as number) {
@@ -289,7 +283,7 @@ provide<BewlyAppProvider>('BEWLY_APP', {
         v-if="isHomePage() && !settings.useOriginalBilibiliHomepage"
         pointer-events-auto
         :activated-page="activatedPage"
-        @change-page="pageName => changeActivatePage(pageName)"
+        @change-page="(page: AppPage) => changeActivatePage(page)"
         @settings-visibility-change="toggleSettings"
         @refresh="handleThrottledPageRefresh"
         @back-to-top="handleThrottledBackToTop"
@@ -303,7 +297,12 @@ provide<BewlyAppProvider>('BEWLY_APP', {
 
     <!-- TopBar -->
     <div m-auto max-w="$bew-page-max-width">
+      <OldTopBar
+        v-if="settings.useOldTopBar"
+        pos="top-0 left-0" z="99 hover:1001" w-full
+      />
       <TopBar
+        v-else
         pos="top-0 left-0" z="99 hover:1001" w-full
       />
     </div>
@@ -316,7 +315,7 @@ provide<BewlyAppProvider>('BEWLY_APP', {
         <OverlayScrollbarsComponent ref="scrollbarRef" element="div" h-inherit defer @os-scroll="handleOsScroll">
           <main m-auto max-w="$bew-page-max-width">
             <div
-              p="t-80px" m-auto
+              p="t-[calc(var(--bew-top-bar-height)+10px)]" m-auto
               w="lg:85% md:[calc(90%-60px)] [calc(100%-140px)]"
             >
               <!-- control button group -->

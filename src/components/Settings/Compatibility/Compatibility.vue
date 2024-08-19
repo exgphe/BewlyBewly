@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import Radio from '~/components/Radio.vue'
 import { settings } from '~/logic'
 import { isHomePage } from '~/utils/main'
 
-import SettingsItem from './SettingsItem.vue'
-import SettingsItemGroup from './SettingsItemGroup.vue'
+import SettingsItem from '../components/SettingsItem.vue'
+import SettingsItemGroup from '../components/SettingsItemGroup.vue'
 
 watch(() => settings.value.useOriginalBilibiliHomepage, () => {
   if (isHomePage())
@@ -23,6 +22,9 @@ function changeThemeColor(color: string) {
 <template>
   <div>
     <SettingsItemGroup :title="$t('settings.group_common')">
+      <SettingsItem :title="$t('settings.use_original_bilibili_topbar')">
+        <Radio v-model="settings.useOriginalBilibiliTopBar" />
+      </SettingsItem>
       <SettingsItem :title="$t('settings.use_original_bilibili_homepage')">
         <template #desc>
           <span color="$bew-error-color" v-text="$t('settings.use_original_bilibili_homepage_desc')" />

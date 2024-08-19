@@ -2,12 +2,11 @@
 import { useThrottleFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
-import Select from '~/components/Select.vue'
 import { settings } from '~/logic'
 
-import ChangeWallpaper from './ChangeWallpaper.vue'
-import SettingsItem from './SettingsItem.vue'
-import SettingsItemGroup from './SettingsItemGroup.vue'
+import ChangeWallpaper from '../components/ChangeWallpaper.vue'
+import SettingsItem from '../components/SettingsItem.vue'
+import SettingsItemGroup from '../components/SettingsItemGroup.vue'
 
 const { t } = useI18n()
 
@@ -115,6 +114,10 @@ function changeWallpaper(url: string) {
             >
           </div>
         </div>
+      </SettingsItem>
+
+      <SettingsItem :title="$t('settings.gradient_theme_color_background')">
+        <Radio v-model="settings.useLinearGradientThemeColorBackground" />
       </SettingsItem>
     </SettingsItemGroup>
 

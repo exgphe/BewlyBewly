@@ -16,6 +16,7 @@ export interface Settings {
   enableVideoPreview: boolean
   enableVideoCtrlBarOnVideoCard: boolean
   hoverVideoCardDelayed: boolean
+  useOldTopBar: boolean
   autoHideTopBar: boolean
   topBarIconBadges: 'number' | 'dot' | 'none'
   blockAds: boolean
@@ -29,6 +30,7 @@ export interface Settings {
 
   theme: 'light' | 'dark' | 'auto'
   themeColor: string
+  useLinearGradientThemeColorBackground: boolean
   wallpaperMode: 'buildIn' | 'byUrl'
   wallpaper: string
   enableWallpaperMasking: boolean
@@ -62,6 +64,7 @@ export interface Settings {
 
   adaptToOtherPageStyles: boolean
   showTopBar: boolean
+  useOriginalBilibiliTopBar: boolean
   useOriginalBilibiliHomepage: boolean
 }
 export const settings = useStorageLocal('settings', ref<Settings>({
@@ -72,6 +75,7 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   enableVideoPreview: true,
   enableVideoCtrlBarOnVideoCard: false,
   hoverVideoCardDelayed: false,
+  useOldTopBar: false,
   autoHideTopBar: false,
   topBarIconBadges: 'number',
   dockPosition: 'right',
@@ -81,10 +85,11 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   reduceFrostedGlassBlur: false,
   dockItemVisibilityList: [],
   disableLightDarkModeSwitcherOnDock: false,
-  moveBackToTopOrRefreshButtonToDock: false,
+  moveBackToTopOrRefreshButtonToDock: true,
 
   theme: 'auto',
   themeColor: '#00a1d6',
+  useLinearGradientThemeColorBackground: false,
   wallpaperMode: 'buildIn',
   wallpaper: '',
   enableWallpaperMasking: false,
@@ -119,6 +124,7 @@ export const settings = useStorageLocal('settings', ref<Settings>({
 
   adaptToOtherPageStyles: true,
   showTopBar: true,
+  useOriginalBilibiliTopBar: false,
   useOriginalBilibiliHomepage: false,
 }), { mergeDefaults: true })
 

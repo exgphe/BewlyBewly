@@ -32,6 +32,7 @@ settings:
 
   # Settings menu
   menu_general: 一般
+  menu_desktop_and_dock: 桌面與 Dock
   menu_appearance: 外觀
   menu_home: 首頁
   menu_search_page: 搜尋頁
@@ -80,6 +81,7 @@ settings:
   block_ads: 封鎖廣告
   disable_frosted_glass: 停用毛玻璃效果
   reduce_frosted_glass_blur: 降低毛玻璃模糊強度
+  use_old_topbar: 使用舊版頂欄
   auto_hide_topbar: 自動隱藏頂欄
   topbar_icon_badges: 圖示標記樣式
   topbar_icon_badges_opt:
@@ -105,6 +107,7 @@ settings:
     dark: 深色
     auto: 自動
   theme_color: 主題色
+  gradient_theme_color_background: 在深色模式下使用漸層主題色作為背景
   wallpaper_mode: 背景圖片模式
   wallpaper_mode_desc: '使用 URL: 直接用網上圖片的 URL 來設定背景圖片。'
   wallpaper_mode_opt:
@@ -159,6 +162,7 @@ settings:
   # Common
   use_original_bilibili_homepage: 使用原版 Bilibili 首頁
   use_original_bilibili_homepage_desc: 當您變更此設定後，如果在首頁上，頁面將自動重新整理！
+  use_original_bilibili_topbar: 使用原版 Bilibili 頂欄
   adapt_to_other_page_styles: 適應其他頁面風格
   adapt_to_other_page_styles_desc: 適應一些常見頁面，以配合 BewlyBewly 主題
   # Bilibili Evolved
@@ -178,6 +182,15 @@ settings:
   contributors: 貢獻者
 
   just_wanna_change_the_job: 我只想換一份好一點的工作...
+  just_wanna_change_the_job_hint: |-
+    Let's just consider this a piece of performance art.
+
+    Now I'm still working at my old company, which has started to gradually appreciate my contributes. I work on both front-end & back-end there.
+    I'm not foolish enough to mess up in the current situation; Instead, I will try to create my own environment and gradually become a versatile person.
+    The Logos for BewlyBewly, whether they are new or old, or even the VTuber style of logo, are all designed and made by me. I have always been working hard to develop my ability to produce independent projects.
+
+    Additionally, I am very grateful for the people who have contracted me by email or other means during this time, whether they ending up helping me or not.
+    However, I particularly want to wish a certain product manager who lured people into working for free while boasting about his own capabilities, thinking I would stupidly believe everything he said? I wish you a lifetime of only managing products you dislike for other companies.
   just_wanna_change_the_job_desc: |-
     首先十分抱歉在这里打扰您，我是一名前端开发者，坐标广州，我想换一份好一点的工作
     BewlyBewly 其实是我在找工作的时候做的一个项目，那时试过有快半年是完全没有工作的状态，面试时一直刁难要么就是被礼貌拒绝
@@ -244,6 +257,10 @@ topbar:
     paid_courses: 付費課堂
     community: 社群中心
     music_plus: 新歌熱榜
+    game_center: 遊戲中心
+    comic_con_and_goods: 動漫節與周邊
+    manga: 漫畫
+    game_competitions: 遊戲賽事
   user_dropdown:
     money: 硬幣：
     b_coins: B幣：
@@ -251,6 +268,7 @@ topbar:
     following: 追蹤中
     followers: 粉絲
     posts: 動態
+    bilibili_premium: Bilibili 大會員
     account_settings: 帳戶設定
     uploads_manager: 內容管理
     b_coins_wallet: B幣錢包
