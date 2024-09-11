@@ -14,15 +14,15 @@ const mainStore = useMainStore()
 const topBarIconBadgesOptions = computed(() => {
   return [
     {
-      label: t('settings.topbar_icon_badges_opt.number'),
+      label: t('settings.top_bar_icon_badges_opt.number'),
       value: 'number',
     },
     {
-      label: t('settings.topbar_icon_badges_opt.dot'),
+      label: t('settings.top_bar_icon_badges_opt.dot'),
       value: 'dot',
     },
     {
-      label: t('settings.topbar_icon_badges_opt.none'),
+      label: t('settings.top_bar_icon_badges_opt.none'),
       value: 'none',
     },
   ]
@@ -31,19 +31,37 @@ const topBarIconBadgesOptions = computed(() => {
 const dockPositions = computed(() => {
   return [
     {
-      label: t('settings.dock_position_opt.left'),
+      label: t('common.position.left'),
       value: 'left',
     },
     {
-      label: t('settings.dock_position_opt.right'),
+      label: t('common.position.right'),
       value: 'right',
     },
     {
-      label: t('settings.dock_position_opt.bottom'),
+      label: t('common.position.bottom'),
       value: 'bottom',
     },
   ]
 })
+
+const topBarLinkOpenModeOptions = computed(() => {
+  return [
+    {
+      label: t('settings.top_bar_link_opening_behavior_opt.current_tab'),
+      value: 'currentTab',
+    },
+    {
+      label: t('settings.top_bar_link_opening_behavior_opt.current_tab_if_not_homepage'),
+      value: 'currentTabIfNotHomepage',
+    },
+    {
+      label: t('settings.top_bar_link_opening_behavior_opt.new_tab'),
+      value: 'newTab',
+    },
+  ]
+})
+
 const pageOptions = computed((): { label: string, icon: string, value: string }[] => {
   return mainStore.dockItems.map((e: any) => {
     return {
@@ -52,6 +70,19 @@ const pageOptions = computed((): { label: string, icon: string, value: string }[
       value: e.page,
     }
   })
+})
+
+const sidebarPositions = computed(() => {
+  return [
+    {
+      label: t('common.position.left'),
+      value: 'left',
+    },
+    {
+      label: t('common.position.right'),
+      value: 'right',
+    },
+  ]
 })
 
 function resetDockContent() {
@@ -75,13 +106,16 @@ function handleToggleDockItem(dockItem: any) {
 <template>
   <div>
     <SettingsItemGroup :title="$t('settings.group_topbar')">
-      <SettingsItem :title="$t('settings.use_old_topbar')">
+      <SettingsItem :title="$t('settings.use_old_top_bar')">
         <Radio v-model="settings.useOldTopBar" />
       </SettingsItem>
-      <SettingsItem :title="$t('settings.auto_hide_topbar')">
+      <SettingsItem :title="$t('settings.top_bar_link_opening_behavior')">
+        <Select v-model="settings.topBarLinkOpenMode" :options="topBarLinkOpenModeOptions" w="full" />
+      </SettingsItem>
+      <SettingsItem :title="$t('settings.auto_hide_top_bar')">
         <Radio v-model="settings.autoHideTopBar" />
       </SettingsItem>
-      <SettingsItem :title="$t('settings.topbar_icon_badges')">
+      <SettingsItem :title="$t('settings.top_bar_icon_badges')">
         <Select v-model="settings.topBarIconBadges" :options="topBarIconBadgesOptions" w="full" />
       </SettingsItem>
     </SettingsItemGroup>
@@ -105,7 +139,7 @@ function handleToggleDockItem(dockItem: any) {
               <template #left>
                 <div i-mingcute:back-line />
               </template>
-              {{ $t('common.reset') }}
+              {{ $t('common.operation.reset') }}
             </Button>
           </div>
         </template>
@@ -138,6 +172,14 @@ function handleToggleDockItem(dockItem: any) {
       </SettingsItem>
       <SettingsItem :title="$t('settings.move_back_to_top_and_refresh_to_dock')">
         <Radio v-model="settings.moveBackToTopOrRefreshButtonToDock" />
+      </SettingsItem>
+    </SettingsItemGroup>
+    <SettingsItemGroup :title="$t('settings.group_sidebar')" :desc="$t('settings.group_sidebar_desc')">
+      <SettingsItem :title="$t('settings.sidebar_position')">
+        <Select v-model="settings.sidebarPosition" :options="sidebarPositions" w="full" />
+      </SettingsItem>
+      <SettingsItem :title="$t('settings.auto_hide_sidebar')">
+        <Radio v-model="settings.autoHideSidebar" />
       </SettingsItem>
     </SettingsItemGroup>
   </div>

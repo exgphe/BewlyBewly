@@ -4,6 +4,7 @@ import '~/styles'
 import { createApp } from 'vue'
 
 import { useDark } from '~/composables/useDark'
+import { BEWLY_MOUNTED } from '~/constants/globalEvents'
 import { settings } from '~/logic'
 import { setupApp } from '~/logic/common-setup'
 import { runWhenIdle } from '~/utils/lazyLoad'
@@ -27,7 +28,7 @@ if (isFirefox) {
 
 const currentUrl = document.URL
 
-function isSupportedPages() {
+function isSupportedPages(): boolean {
   if (
     // homepage
     isHomePage()
@@ -113,11 +114,23 @@ if (settings.value.adaptToOtherPageStyles && isHomePage()) {
   `)
 }
 
-function onDOMLoaded() {
+window.addEventListener(BEWLY_MOUNTED, () => {
+  if (beforeLoadedStyleEl)
+    document.documentElement.removeChild(beforeLoadedStyleEl)
+})
+
+// Set the original Bilibili top bar to `display: none` to prevent it from showing before the load
+// see: https://github.com/BewlyBewly/BewlyBewly/issues/967
+let removeOriginalTopBar: HTMLStyleElement | null = null
+if (!settings.value.useOriginalBilibiliTopBar && isSupportedPages())
+  removeOriginalTopBar = injectCSS(`.bili-header { visibility: hidden !important; }`)
+
+async function onDOMLoaded() {
+  let originalTopBar: HTMLElement | null = null
   // Remove the original Bilibili homepage if in Bilibili homepage & useOriginalBilibiliHomepage is enabled
   if (!settings.value.useOriginalBilibiliHomepage && isHomePage()) {
-    const originalTopBar = document.querySelector<HTMLElement>('#i_cecream > .bili-feed4 > .bili-header')
-    const originalTopBarInnerUselessContents = document.querySelectorAll<HTMLElement>('#i_cecream > .bili-feed4 > .bili-header > *:not(.bili-header__bar)')
+    originalTopBar = document.querySelector<HTMLElement>('.bili-header')
+    const originalTopBarInnerUselessContents = document.querySelectorAll<HTMLElement>('.bili-header > *:not(.bili-header__bar)')
 
     if (originalTopBar) {
       // always show the background on the original bilibili top bar
@@ -132,13 +145,20 @@ function onDOMLoaded() {
     if (originalTopBar)
       document.body.appendChild(originalTopBar)
   }
-  if (beforeLoadedStyleEl)
-    document.documentElement.removeChild(beforeLoadedStyleEl)
 
   if (isSupportedPages()) {
     // Then inject the app
-    injectApp()
+    if (isHomePage() && !settings.value.useOriginalBilibiliHomepage) {
+      injectApp()
+    }
+    else {
+      await injectAppWhenIdle()
+    }
   }
+
+  // Reset the original Bilibili top bar display style
+  if (removeOriginalTopBar)
+    document.documentElement.removeChild(removeOriginalTopBar)
 }
 
 if (document.readyState !== 'loading')
@@ -146,39 +166,46 @@ if (document.readyState !== 'loading')
 else
   document.addEventListener('DOMContentLoaded', () => onDOMLoaded())
 
-function injectApp() {
-  // Inject app when idle
-  runWhenIdle(async () => {
-  // mount component to context window
-    const container = document.createElement('div')
-    container.id = 'bewly'
-    const root = document.createElement('div')
-    const styleEl = document.createElement('link')
-    // Fix #69 https://github.com/hakadao/BewlyBewly/issues/69
-    // https://medium.com/@emilio_martinez/shadow-dom-open-vs-closed-1a8cf286088a - open shadow dom
-    const shadowDOM = container.attachShadow?.({ mode: 'open' }) || container
-    styleEl.setAttribute('rel', 'stylesheet')
-    styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
-    shadowDOM.appendChild(styleEl)
-    shadowDOM.appendChild(root)
-    container.style.opacity = '0'
-    container.style.transition = 'opacity 0.5s'
-    styleEl.onload = () => {
-    // To prevent abrupt style transitions caused by sudden style changes
-      setTimeout(() => {
-        container.style.opacity = '1'
-      }, 500)
-    }
-
-    // inject svg icons
-    const svgDiv = document.createElement('div')
-    svgDiv.innerHTML = SVG_ICONS
-    shadowDOM.appendChild(svgDiv)
-
-    document.body.appendChild(container)
-
-    const app = createApp(App)
-    setupApp(app)
-    app.mount(root)
+function injectAppWhenIdle() {
+  return new Promise<void>((resolve) => {
+    // Inject app when idle
+    runWhenIdle(async () => {
+      injectApp()
+      resolve()
+    })
   })
+}
+
+function injectApp() {
+  // mount component to context window
+  const container = document.createElement('div')
+  container.id = 'bewly'
+  const root = document.createElement('div')
+  const styleEl = document.createElement('link')
+  // Fix #69 https://github.com/hakadao/BewlyBewly/issues/69
+  // https://medium.com/@emilio_martinez/shadow-dom-open-vs-closed-1a8cf286088a - open shadow dom
+  const shadowDOM = container.attachShadow?.({ mode: 'open' }) || container
+  styleEl.setAttribute('rel', 'stylesheet')
+  styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
+  shadowDOM.appendChild(styleEl)
+  shadowDOM.appendChild(root)
+  container.style.opacity = '0'
+  container.style.transition = 'opacity 0.5s'
+  styleEl.onload = () => {
+    // To prevent abrupt style transitions caused by sudden style changes
+    setTimeout(() => {
+      container.style.opacity = '1'
+    }, 500)
+  }
+
+  // inject svg icons
+  const svgDiv = document.createElement('div')
+  svgDiv.innerHTML = SVG_ICONS
+  shadowDOM.appendChild(svgDiv)
+
+  document.body.appendChild(container)
+
+  const app = createApp(App)
+  setupApp(app)
+  app.mount(root)
 }
