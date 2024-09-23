@@ -8,6 +8,8 @@ export const accessKey = useStorageLocal('accessKey', '')
 
 export interface Settings {
   language: string
+  customizeFont: boolean
+  fontFamily: string
   touchScreenOptimization: boolean
   enableGridLayoutSwitcher: boolean
   enableHorizontalScrolling: boolean
@@ -44,6 +46,9 @@ export interface Settings {
   wallpaperMaskOpacity: number
   wallpaperBlurIntensity: number
   locallyUploadedWallpaper: wallpaperItem | null
+
+  customizeCSS: boolean
+  customizeCSSContent: string
 
   searchPageDarkenOnSearchFocus: boolean
   searchPageBlurredOnSearchFocus: boolean
@@ -82,8 +87,11 @@ export interface Settings {
   useOriginalBilibiliTopBar: boolean
   useOriginalBilibiliHomepage: boolean
 }
-export const settings = useStorageLocal('settings', ref<Settings>({
+
+export const originalSettings: Settings = {
   language: '',
+  customizeFont: false,
+  fontFamily: '',
   touchScreenOptimization: false,
   enableGridLayoutSwitcher: true,
   enableHorizontalScrolling: false,
@@ -121,6 +129,9 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   wallpaperBlurIntensity: 0,
   locallyUploadedWallpaper: null,
 
+  customizeCSS: false,
+  customizeCSSContent: '',
+
   searchPageDarkenOnSearchFocus: true,
   searchPageBlurredOnSearchFocus: false,
   searchPageLogoColor: 'themeColor',
@@ -157,7 +168,9 @@ export const settings = useStorageLocal('settings', ref<Settings>({
   showTopBar: true,
   useOriginalBilibiliTopBar: false,
   useOriginalBilibiliHomepage: false,
-}), { mergeDefaults: true })
+}
+
+export const settings = useStorageLocal('settings', ref<Settings>(originalSettings), { mergeDefaults: true })
 
 export type GridLayout = 'adaptive' | 'twoColumns' | 'oneColumn'
 export const homePageGridLayout = useStorageLocal('homePageGridLayout', ref<GridLayout>('adaptive'), { mergeDefaults: true })
