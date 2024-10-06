@@ -91,9 +91,12 @@ watch(() => settings.value.language, (newValue) => {
       <SettingsItem :title="$t('settings.customize_font')">
         <Radio v-model="settings.customizeFont" />
         <template v-if="settings.customizeFont" #bottom>
-          <Input v-model="settings.fontFamily" />
+          <Input v-model="settings.fontFamily" @keydown.stop.passive="() => {}" />
           <div class="customize-font-desc" text="sm $bew-text-2" mt-1 v-html="t('settings.customize_font_desc')" />
         </template>
+      </SettingsItem>
+      <SettingsItem :title="$t('settings.remove_the_indent_from_chinese_punctuation')" :desc="$t('settings.remove_the_indent_from_chinese_punctuation_desc')">
+        <Radio v-model="settings.removeTheIndentFromChinesePunctuation" />
       </SettingsItem>
     </SettingsItemGroup>
 

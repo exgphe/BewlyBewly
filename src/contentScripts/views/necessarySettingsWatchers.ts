@@ -54,7 +54,7 @@ export function setupNecessarySettingsWatchers() {
     () => {
       // Set the default font family
       if (!settings.value.customizeFont && !settings.value.fontFamily) {
-        settings.value.fontFamily = `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Roboto Flex", "Noto Sans", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Arial, sans-serif`
+        settings.value.fontFamily = `-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Roboto Flex", "Noto Sans", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Arial, sans-serif`
       }
 
       if (settings.value.customizeFont) {
@@ -62,6 +62,33 @@ export function setupNecessarySettingsWatchers() {
       }
       else {
         document.documentElement.style.removeProperty('--bew-font-family')
+      }
+    },
+    { immediate: true },
+  )
+
+  const removeTheIndentFromChinesePunctuationStyleEl = injectCSS(`
+    .video-info-container .special-text-indent[data-title^='《'],
+    .video-info-container .special-text-indent[data-title^='「'],
+    .video-info-container .special-text-indent[data-title^='『'], 
+    .video-info-container .special-text-indent[data-title^='【'],
+    p[title^='\\300c'],
+    p[title^='\\300e'],
+    p[title^='\\3010'],
+    h3[title^='\\300c'],
+    h3[title^='\\300e'],
+    h3[title^='\\3010'] {
+      text-indent: 0 !important;
+    }
+  `)
+  watch(
+    () => settings.value.removeTheIndentFromChinesePunctuation,
+    () => {
+      if (settings.value.removeTheIndentFromChinesePunctuation) {
+        document.documentElement.appendChild(removeTheIndentFromChinesePunctuationStyleEl)
+      }
+      else {
+        document.documentElement.removeChild(removeTheIndentFromChinesePunctuationStyleEl)
       }
     },
     { immediate: true },
@@ -139,18 +166,22 @@ export function setupNecessarySettingsWatchers() {
       const bewlyEl: HTMLElement | null = document.querySelector('#bewly')
       const bewlyShadow: ShadowRoot | null = bewlyEl?.shadowRoot || null
 
+      document.querySelectorAll('[data-bewly-customizeCSS]').forEach((el) => {
+        el.remove()
+      })
+
+      bewlyShadow?.querySelectorAll('[data-bewly-customizeCSS]').forEach((el) => {
+        el.remove()
+      })
+
       if (settings.value.customizeCSS) {
         styleEL = injectCSS(settings.value.customizeCSSContent)
+        styleEL.setAttribute('data-bewly-customizeCSS', '')
 
-        if (bewlyShadow)
+        if (bewlyShadow) {
           bewlyStyleEL = injectCSS(settings.value.customizeCSSContent, bewlyShadow)
-      }
-      else {
-        if (styleEL)
-          document.documentElement.removeChild(styleEL)
-
-        if (bewlyShadow && bewlyStyleEL)
-          bewlyShadow.removeChild(bewlyStyleEL)
+          bewlyStyleEL.setAttribute('data-bewly-customizeCSS', '')
+        }
       }
     },
     { immediate: true },
@@ -171,6 +202,7 @@ export function setupNecessarySettingsWatchers() {
     (newVal) => {
       if (newVal)
         settings.value.useOriginalBilibiliTopBar = false
+      settings.value.useOriginalBilibiliTopBar = !settings.value.showTopBar
     },
     { immediate: true },
   )
@@ -181,6 +213,7 @@ export function setupNecessarySettingsWatchers() {
       if (newVal)
         settings.value.showTopBar = false
       document.documentElement.classList.toggle('remove-bili-top-bar', !settings.value.useOriginalBilibiliTopBar)
+      settings.value.showTopBar = !settings.value.useOriginalBilibiliTopBar
     },
     { immediate: true },
   )
