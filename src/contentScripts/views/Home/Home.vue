@@ -195,34 +195,54 @@ function toggleTabContentLoading(loading: boolean) {
         ease-in-out flex="~ justify-between items-start gap-4"
         :class="{ hide: shouldMoveTabsUp }"
       >
-        <section v-if="!(!settings.alwaysShowTabsOnHomePage && currentTabs.length === 1)" flex="~ items-center gap-3 wrap">
-          <button
-            v-for="tab in currentTabs" :key="tab.page"
-            :class="{ 'tab-activated': activatedPage === tab.page }"
-            style="backdrop-filter: var(--bew-filter-glass-1)"
-            px-4 lh-35px h-35px bg="$bew-elevated hover:$bew-elevated-hover" rounded="$bew-radius"
-            cursor-pointer shadow="$bew-shadow-1" box-border border="1 $bew-border-color" duration-300
-            flex="~ gap-2 items-center" relative
-            @click="handleChangeTab(tab)"
+        <section
+          v-if="!(!settings.alwaysShowTabsOnHomePage && currentTabs.length === 1)"
+          style="backdrop-filter: var(--bew-filter-glass-1)"
+          bg="$bew-elevated" p-1
+          h-38px rounded-full
+          text="sm"
+          shadow="[var(--bew-shadow-1),var(--bew-shadow-edge-glow-1)]"
+          box-border border="1 $bew-border-color"
+        >
+          <OverlayScrollbarsComponent
+            class="home-tabs-inside"
+            element="div" defer
+            :options="{
+              x: 'scroll',
+              y: 'hidden',
+            }"
+            h-full of-hidden
           >
-            <span class="text-center">{{ $t(tab.i18nKey) }}</span>
+            <button
+              v-for="tab in currentTabs" :key="tab.page"
+              :class="{ 'tab-activated': activatedPage === tab.page }"
+              px-3 h-inherit
+              bg="transparent hover:$bew-fill-2" rounded-full
+              cursor-pointer duration-300
+              flex="~ gap-2 items-center shrink-0" relative
+              @click="handleChangeTab(tab)"
+            >
+              <span class="text-center">{{ $t(tab.i18nKey) }}</span>
 
-            <Transition name="fade">
-              <div
-                v-show="activatedPage === tab.page && tabContentLoading"
-                i-svg-spinners:ring-resize
-                pos="absolute right-4px top-4px" duration-300
-                text="8px $bew-text-auto"
-              />
-            </Transition>
-          </button>
+              <Transition name="fade">
+                <div
+                  v-show="activatedPage === tab.page && tabContentLoading"
+                  i-svg-spinners:ring-resize
+                  pos="absolute right-4px top-4px" duration-300
+                  text="8px $bew-text-auto"
+                />
+              </Transition>
+            </button>
+          </OverlayScrollbarsComponent>
         </section>
 
         <div
           v-if="settings.enableGridLayoutSwitcher"
           style="backdrop-filter: var(--bew-filter-glass-1)"
-          flex="~ gap-1 shrink-0" p-1 h-35px bg="$bew-elevated" transform-gpu
-          ml-auto rounded="$bew-radius" shadow="$bew-shadow-1" box-border border="1 $bew-border-color"
+          flex="~ gap-1 shrink-0" p-1 h-38px bg="$bew-elevated" transform-gpu
+          ml-auto rounded-full
+          shadow="[var(--bew-shadow-1),var(--bew-shadow-edge-glow-1)]"
+          box-border border="1 $bew-border-color"
         >
           <div
             v-for="icon in gridLayoutIcons" :key="icon.value"
@@ -231,9 +251,10 @@ function toggleTabContentLoading(loading: boolean) {
               color: gridLayout.home === icon.value ? 'var(--bew-text-auto)' : 'unset',
             }"
             flex="~ justify-center items-center"
-            w-full
-            h-full p="x-2 y-1" rounded="$bew-radius-half" bg="hover:$bew-fill-2" duration-300
-            cursor-pointer @click="gridLayout.home = icon.value"
+            h-full aspect-square
+            rounded-full bg="hover:$bew-fill-2" duration-300
+            cursor-pointer
+            @click="gridLayout.home = icon.value"
           >
             <div :class="gridLayout.home === icon.value ? icon.iconActivated : icon.icon" text-base />
           </div>
@@ -282,6 +303,15 @@ function toggleTabContentLoading(loading: boolean) {
 
 .hide {
   --uno: "important-translate-y--70px";
+}
+
+.home-tabs-inside {
+  :deep([data-overlayscrollbars-contents]) {
+    --uno: "flex items-center gap-1 h-inherit rounded-full";
+  }
+  :deep(.os-scrollbar) {
+    --uno: "mb--4px";
+  }
 }
 
 .tab-activated {
