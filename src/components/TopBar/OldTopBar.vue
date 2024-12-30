@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMouseInElement } from '@vueuse/core'
+import { onKeyStroke, useMouseInElement } from '@vueuse/core'
 import type { Ref, UnwrapNestedRefs } from 'vue'
 
 import { useBewlyApp } from '~/composables/useAppProvider'
@@ -285,20 +285,21 @@ watch(activatedPage, () => {
   toggleTopBarVisible(true)
 })
 
-onMounted(async () => {
+onMounted(() => {
   initData()
-  await nextTick()
-  toggleTopBarVisible(true)
+  nextTick(() => {
+    toggleTopBarVisible(true)
 
-  emitter.off(OVERLAY_SCROLL_BAR_SCROLL)
-  if (isHomePage() && !settings.value.useOriginalBilibiliHomepage) {
-    emitter.on(OVERLAY_SCROLL_BAR_SCROLL, () => {
-      handleScroll()
-    })
-  }
-  else {
-    window.addEventListener('scroll', handleScroll)
-  }
+    emitter.off(OVERLAY_SCROLL_BAR_SCROLL)
+    if (isHomePage() && !settings.value.useOriginalBilibiliHomepage) {
+      emitter.on(OVERLAY_SCROLL_BAR_SCROLL, () => {
+        handleScroll()
+      })
+    }
+    else {
+      window.addEventListener('scroll', handleScroll)
+    }
+  })
 })
 
 onUnmounted(() => {
@@ -422,6 +423,11 @@ async function getTopBarNewMomentsCount() {
 }
 // #endregion
 
+// https://github.com/BewlyBewly/BewlyBewly/issues/1220
+onKeyStroke('/', () => {
+  toggleTopBarVisible(true)
+})
+
 function toggleTopBarVisible(visible: boolean) {
   hideTopBar.value = !visible
   emitter.emit(TOP_BAR_VISIBILITY_CHANGE, visible)
@@ -519,8 +525,8 @@ defineExpose({
             <SearchBar
               v-if="showSearchBar"
               style="
-              --b-search-bar-color: var(--bew-elevated);
-              --b-search-bar-hover: var(--bew-elevated-hover);
+              --b-search-bar-normal-color: var(--bew-elevated);
+              --b-search-bar-hover-color: var(--bew-elevated-hover);
             "
             />
           </Transition>
